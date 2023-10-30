@@ -12,6 +12,7 @@ class ParsGitHub:
         self.response = requests.get(self.url)
         self.soup = BeautifulSoup(self.response.text, 'html.parser')
 
+
     # метод, который будет выводить
     def respone_calendar(self, today=False, yesterday=False):
         calendar = self.soup.find('table', class_="ContributionCalendar-grid js-calendar-graph-table").find('tbody')  # достаем таблицу
@@ -36,16 +37,23 @@ class ParsGitHub:
 
         dict_need_to_days = []
         if today is True:
-            day = str(datetime.now())[0:10]
-            dict_need_to_days.append((day, dict_calendar_contributions[day]))
+            dict_need_to_days.append(self.need_is_day(dict_calendar_contributions))
         if yesterday is True:
-            day = str(datetime.now() - timedelta(days=1))[0:10]
-            dict_need_to_days.append((day, dict_calendar_contributions[day]))
+            dict_need_to_days.append(self.need_is_day(dict_calendar_contributions, need_is_day=1))
 
         if True not in [today, yesterday]:
             return dict_calendar_contributions
         else:
             return dict_need_to_days
+
+    @staticmethod
+    def need_is_day(dict_calendar_contributions, need_is_day=0):
+        day = str(datetime.now() - timedelta(days=1))[0:10]
+        key_value = (day, dict_calendar_contributions[day])
+        return key_value
+
+
+
 
 
 pars = ParsGitHub('DevMosh')
